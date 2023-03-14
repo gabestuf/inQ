@@ -6,30 +6,37 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { FC, useState } from "react";
+import Footer from "../components/Footer";
 
 interface Props {}
 const SurveyPage: FC<Props> = () => {
-  const QuestionList = [
-    { question: "Surveyer Name", type: "text", values: [""] },
-    { question: "Gender", type: "radio", values: ["Female", "Male"] },
-    {
-      question: "How did they response to the question?",
-      type: "radio",
-      values: [
-        "They took a serious, thoughtful response and answered the question",
-        "They are not cool and dismissed the question",
-        "They did something completely unexpected (spontaneous combustion, projective vomit, etc...)",
-      ],
-    },
-    {
-      question: "Notes on Unsolicted Participant",
-      type: "longtext",
-      values: [""],
-    },
-  ];
+  // This is the thing that would come from the database:
+  const responseJSON = {
+    surveyName: "What is your favorite color?",
+    questionList: [
+      { question: "Surveyer Name", type: "text", values: [""] },
+      { question: "Gender", type: "radio", values: ["Female", "Male"] },
+      {
+        question: "How did they response to the question?",
+        type: "radio",
+        values: [
+          "They took a serious, thoughtful response and answered the question",
+          "They are not cool and dismissed the question",
+          "They did something completely unexpected (spontaneous combustion, projective vomit, etc...)",
+        ],
+      },
+      {
+        question: "Notes on Unsolicted Participant",
+        type: "longtext",
+        values: [""],
+      },
+    ],
+  };
+  const QuestionList = responseJSON.questionList;
 
   function initQuestionList() {
     let ans: { question: string; answer: string }[] = [];
@@ -82,15 +89,19 @@ const SurveyPage: FC<Props> = () => {
 
   return (
     <Grid
+      marginTop="3rem"
       container
       spacing={0}
       direction="column"
       alignItems="center"
-      style={{ minHeight: "100vh" }}
       gap="1rem"
     >
-      <h1>inQ</h1>
-      <h2>{question}</h2>
+      <Typography variant="h2" textAlign={"center"}>
+        inQ
+      </Typography>
+      <Typography variant="h4" textAlign={"center"}>
+        {question}
+      </Typography>
 
       {QuestionList.map((q, i) => (
         <FormComponent
@@ -105,9 +116,11 @@ const SurveyPage: FC<Props> = () => {
       ))}
 
       <Button
+        color="primary"
         variant="outlined"
+        size="large"
         onClick={() => {
-          // let pass = prompt("Not so fast! How do I know you can be trusted?");
+          //let pass = prompt("Not so fast! How do I know you can be trusted?");
           let pass = "hi";
           if (pass !== null) {
             handleSubmitQuestion(pass);
@@ -116,6 +129,7 @@ const SurveyPage: FC<Props> = () => {
       >
         Submit
       </Button>
+      <Footer />
     </Grid>
   );
 };
@@ -142,6 +156,7 @@ const FormComponent: FC<Props2> = ({
       return (
         <TextField
           required
+          size="small"
           id="filled-basic"
           label={question}
           variant="filled"
