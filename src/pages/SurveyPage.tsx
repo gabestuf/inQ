@@ -12,16 +12,49 @@ import { FC, useState } from "react";
 
 interface Props {}
 const SurveyPage: FC<Props> = () => {
+  const QuestionList = [
+    { question: "Surveyer Name", type: "text", values: [""] },
+    { question: "Gender", type: "radio", values: ["Female", "Male"] },
+    {
+      question: "How did they response to the question?",
+      type: "radio",
+      values: [
+        "They took a serious, thoughtful response and answered the question",
+        "They are not cool and dismissed the question",
+        "They did something completely unexpected (spontaneous combustion, projective vomit, etc...)",
+      ],
+    },
+    {
+      question: "Notes on Unsolicted Participant",
+      type: "longtext",
+      values: [""],
+    },
+  ];
+
+  function initQuestionList() {
+    let ans: { question: string; answer: string }[] = [];
+    for (const question of QuestionList) {
+      ans.push({ question: question.question, answer: "" });
+    }
+    return ans;
+  }
+
   const question = "Who would win in a fight?";
-  const [name, setName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [gender, setGender] = useState<string>("male");
-  const [response, setResponse] = useState<string>("other");
+  const [answers, setAnswers] = useState<
+    { question: string; answer: string }[]
+  >(initQuestionList());
+
+  const updateQuestion = (answer: string, index: number) => {
+    const newAnswers = [...answers];
+    newAnswers[index].answer = answer;
+    setAnswers([...newAnswers]);
+  };
 
   // There will be a page which gets all questions (with their IDs). The id is stored somewhere and that is how we access the question later
-  /*
-    const handleSubmitQuestion = async (pass: string) => {
+  const handleSubmitQuestion = async (pass: string) => {
+    console.log(answers);
+    /*
+       
         const body = {
             questionID: questionID,
             surveyer: name,
@@ -44,9 +77,8 @@ const SurveyPage: FC<Props> = () => {
         if (resJSON.status === "FAILED") {
 
         }
-    }
-
     */
+  };
 
   return (
     <Grid
@@ -55,98 +87,118 @@ const SurveyPage: FC<Props> = () => {
       direction="column"
       alignItems="center"
       style={{ minHeight: "100vh" }}
+      gap="1rem"
     >
       <h1>inQ</h1>
       <h2>{question}</h2>
-      <TextField
-        required
-        id="filled-basic"
-        label="Surveyer Name"
-        variant="filled"
-        margin="dense"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
 
-      <FormControl
-        margin="normal"
-        sx={{
-          maxWidth: "50%",
-        }}
-      >
-        <FormLabel id="demo-controlled-radio-buttons-group">Gender</FormLabel>
-        <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
-          name="controlled-radio-buttons-group"
-          value={gender}
-          onChange={(e) => {
-            setGender(e.target.value);
-          }}
-        >
-          <FormControlLabel value="female" control={<Radio />} label="Female" />
-          <FormControlLabel value="male" control={<Radio />} label="Male" />
-        </RadioGroup>
-      </FormControl>
-      <FormControl
-        margin="normal"
-        sx={{
-          maxWidth: "50%",
-        }}
-      >
-        <FormLabel id="demo-controlled-radio-buttons-group">
-          How did they respond to the question?
-        </FormLabel>
-        <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
-          name="controlled-radio-buttons-group"
-          value={response}
-          onChange={(e) => {
-            setResponse(e.target.value);
-          }}
-        >
-          <FormControlLabel
-            value="serious"
-            control={<Radio />}
-            label="They took a serious, thoughtful response and answered the question"
-          />
-          <FormControlLabel
-            value="dismissed"
-            control={<Radio />}
-            label="They are not cool and dismissed the question"
-          />
-          <FormControlLabel
-            value="other"
-            control={<Radio />}
-            label="They did something completely unexpected (spontaneous combustion, projective vomit, etc...)"
-          />
-        </RadioGroup>
-      </FormControl>
+      {QuestionList.map((q, i) => (
+        <FormComponent
+          key={i}
+          question={q.question}
+          index={i}
+          type={q.type}
+          values={q.values}
+          answer={answers[i].answer}
+          updateQuestion={updateQuestion}
+        />
+      ))}
 
-      <TextField
-        required
-        id="filled-basic"
-        label="Notes on Unsolicited Participent"
-        fullWidth
-        variant="filled"
-        multiline
-        minRows={3}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        sx={{
-          maxWidth: "50%",
-        }}
-      />
       <Button
         variant="outlined"
-        onSubmit={() => {
-          const pass = prompt("Not so fast! How do I know you can be trusted?");
-          handleSubmitQuestion(pass);
+        onClick={() => {
+          // let pass = prompt("Not so fast! How do I know you can be trusted?");
+          let pass = "hi";
+          if (pass !== null) {
+            handleSubmitQuestion(pass);
+          }
         }}
       >
         Submit
       </Button>
     </Grid>
   );
+};
+
+interface Props2 {
+  type: string;
+  values: string[];
+  answer: string;
+  index: number;
+  question: string;
+  updateQuestion: (answer: string, index: number) => void;
+}
+
+const FormComponent: FC<Props2> = ({
+  question,
+  type,
+  values,
+  answer,
+  updateQuestion,
+  index,
+}) => {
+  switch (type) {
+    case "text":
+      return (
+        <TextField
+          required
+          id="filled-basic"
+          label={question}
+          variant="filled"
+          value={answer}
+          onChange={(e) => updateQuestion(e.target.value, index)}
+        />
+      );
+
+    case "radio":
+      return (
+        <FormControl
+          sx={{
+            maxWidth: "50%",
+          }}
+        >
+          <FormLabel id="demo-controlled-radio-buttons-group">
+            {question}
+          </FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={answer}
+            onChange={(e) => {
+              updateQuestion(e.target.value, index);
+            }}
+          >
+            {values.map((value, i) => (
+              <FormControlLabel
+                key={i}
+                value={value}
+                control={<Radio />}
+                label={value}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      );
+    case "longtext":
+      return (
+        <TextField
+          required
+          id="filled-basic"
+          label={question}
+          fullWidth
+          variant="filled"
+          multiline
+          minRows={3}
+          value={answer}
+          onChange={(e) => updateQuestion(e.target.value, index)}
+          sx={{
+            maxWidth: "50%",
+          }}
+        />
+      );
+    default:
+      return <h2>This question could not render {index}</h2>;
+  }
 };
 
 export default SurveyPage;
