@@ -1,55 +1,73 @@
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { FC, useState } from "react";
+import { FC, Fragment, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { AppContext } from "../AppContext";
 import Footer from "../components/Footer";
 
 interface Props {}
+
 const SurveyPage: FC<Props> = () => {
+  let { id } = useParams();
+  const appInfo = useContext(AppContext);
   // This is the thing that would come from the database:
-  const responseJSON = {
-    surveyName: "What is your favorite color?",
-    questionList: [
-      { question: "Surveyer Name", type: "text", values: [""] },
-      { question: "Gender", type: "radio", values: ["Female", "Male"] },
-      {
-        question: "How did they response to the question?",
-        type: "radio",
-        values: [
-          "They took a serious, thoughtful response and answered the question",
-          "They are not cool and dismissed the question",
-          "They did something completely unexpected (spontaneous combustion, projective vomit, etc...)",
-        ],
-      },
-      {
-        question: "Notes on Unsolicted Participant",
-        type: "longtext",
-        values: [""],
-      },
-    ],
-  };
-  const QuestionList = responseJSON.questionList;
+  const [answers, setAnswers] = useState<{ question: string; answer: string }[]>([]);
+  const [surveyData, setSurveyData] = useState<{ id: string; owner: string; title: string; description: string; questions: { question: string; type: string; values: string[] }[]; responseList: string[] }>({
+    id: "0",
+    owner: "default",
+    title: "Oops, there was an error",
+    description: "default",
+    questions: [{ question: "This is so sad.", type: "text", values: ["default", "nondefault"] }],
+    responseList: ["id1", "id2"],
+  });
+
+  const [tipsOn, setTipsOn] = useState<number[]>([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!id) {
+      id = "6410e8a2e9c3e0032ff97862";
+    }
+
+    getSurvey(id);
+  }, []);
+
+  useEffect(() => {
+    initQuestionList();
+  }, [surveyData]);
+
+  async function getSurvey(id: string) {
+    const response = await fetch(appInfo.url + `/inq/survey/getSurvey/${id}`);
+    const resJSON = await response.json();
+
+    if (resJSON.status === "SUCCESS") {
+      const newData = {
+        id: resJSON.id,
+        owner: resJSON.owner,
+        title: resJSON.title,
+        description: resJSON.description,
+        questions: JSON.parse(resJSON.questions),
+        responseList: JSON.parse(resJSON.responseList),
+      };
+      setSurveyData(newData);
+    }
+    if (resJSON.status === "FAILED") {
+      //alert(`Error: ${resJSON.message}`);
+      navigate("/404");
+    }
+  }
 
   function initQuestionList() {
     let ans: { question: string; answer: string }[] = [];
-    for (const question of QuestionList) {
-      ans.push({ question: question.question, answer: "" });
+    let tOn = [];
+    for (const q of surveyData.questions) {
+      ans.push({ question: q.question, answer: "" });
+      tOn.push(0);
     }
-    return ans;
+    setAnswers(ans);
+    setTipsOn(tOn);
   }
-
-  const question = "Who would win in a fight?";
-  const [answers, setAnswers] = useState<
-    { question: string; answer: string }[]
-  >(initQuestionList());
 
   const updateQuestion = (answer: string, index: number) => {
     const newAnswers = [...answers];
@@ -58,79 +76,81 @@ const SurveyPage: FC<Props> = () => {
   };
 
   // There will be a page which gets all questions (with their IDs). The id is stored somewhere and that is how we access the question later
-  const handleSubmitQuestion = async (pass: string) => {
-    console.log(answers);
-    /*
-       
-        const body = {
-            questionID: questionID,
-            surveyer: name,
-            password: password,
-            answers: answers // a list of objects that have questions as keys and answers as values
-        }
-        const response = await fetch(URL + "/question/saveResponse")
-        const resJSON = await response.json()
+  const handleSubmitQuestion = async () => {
+    // make sure all questions are answered
+    let changed = false;
+    for (let i = 0; i < answers.length; i++) {
+      if (answers[i].answer.length === 0) {
+        tipsOn[i] = 1;
+        changed = true;
+      } else {
+        tipsOn[i] = 0;
+      }
+    }
 
-        if (resJSON.status === "SUCCESS") {
-            alert("Successfully saved response")
+    if (changed) {
+      console.log(tipsOn);
+      setTipsOn([...tipsOn]);
+      return;
+    }
 
-            // reset fields
-            setName("")
-            setPassword("")
-            setDescription("")
-            setGender("")
-            setResponse("")
-        }
-        if (resJSON.status === "FAILED") {
+    const pass = prompt("Not so fast! How do I know you can be trusted?");
 
-        }
-    */
+    if (!pass) {
+      return;
+    }
+
+    const response = await fetch(appInfo.url + "/inq/survey/saveResponse", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        questionID: surveyData.id,
+        surveyer: answers[answers.findIndex((answer) => answer.question === "Surveyer Name")].answer,
+        password: pass,
+        answers: answers,
+      }),
+    });
+
+    const resJSON = await response.json();
+
+    if (resJSON.status === "SUCCESS") {
+      alert("Successfully saved response");
+
+      // reset fields
+      initQuestionList();
+    } else if (resJSON.status === "FAILED") {
+      alert(`Failed to save response | ${resJSON.message}`);
+    }
   };
 
   return (
-    <Grid
-      marginTop="3rem"
-      container
-      spacing={0}
-      direction="column"
-      alignItems="center"
-      gap="1rem"
-    >
-      <Typography variant="h2" textAlign={"center"}>
-        inQ
-      </Typography>
-      <Typography variant="h4" textAlign={"center"}>
-        {question}
-      </Typography>
+    <Fragment>
+      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1rem">
+        <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
+          {surveyData.title}
+        </Typography>
 
-      {QuestionList.map((q, i) => (
-        <FormComponent
-          key={i}
-          question={q.question}
-          index={i}
-          type={q.type}
-          values={q.values}
-          answer={answers[i].answer}
-          updateQuestion={updateQuestion}
-        />
-      ))}
-
-      <Button
-        color="primary"
-        variant="outlined"
-        size="large"
-        onClick={() => {
-          //let pass = prompt("Not so fast! How do I know you can be trusted?");
-          let pass = "hi";
-          if (pass !== null) {
-            handleSubmitQuestion(pass);
+        {surveyData.questions.map((q, i) => {
+          if (surveyData && surveyData.questions && surveyData.questions.length > 0 && answers.length === surveyData.questions.length) {
+            return <FormComponent tipsOn={tipsOn[i] > 0} key={i} question={q.question} index={i} type={q.type} values={q.values} answer={answers[i].answer} updateQuestion={updateQuestion} />;
           }
-        }}
-      >
-        Submit
-      </Button>
-      <Footer />
-    </Grid>
+          return null;
+        })}
+
+        <Button
+          color="primary"
+          variant="outlined"
+          size="large"
+          onClick={() => {
+            handleSubmitQuestion();
+          }}
+        >
+          Submit
+        </Button>
+      </Grid>
+    </Fragment>
   );
 };
 
@@ -141,40 +161,18 @@ interface Props2 {
   index: number;
   question: string;
   updateQuestion: (answer: string, index: number) => void;
+  tipsOn: boolean;
 }
 
-const FormComponent: FC<Props2> = ({
-  question,
-  type,
-  values,
-  answer,
-  updateQuestion,
-  index,
-}) => {
+const FormComponent: FC<Props2> = ({ question, type, values, answer, updateQuestion, index, tipsOn }) => {
   switch (type) {
     case "text":
-      return (
-        <TextField
-          required
-          size="small"
-          id="filled-basic"
-          label={question}
-          variant="filled"
-          value={answer}
-          onChange={(e) => updateQuestion(e.target.value, index)}
-        />
-      );
+      return <TextField error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} sx={{ maxWidth: "40rem" }} required size="small" id="filled-basic" label={question} variant="filled" value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />;
 
     case "radio":
       return (
-        <FormControl
-          sx={{
-            maxWidth: "50%",
-          }}
-        >
-          <FormLabel id="demo-controlled-radio-buttons-group">
-            {question}
-          </FormLabel>
+        <FormControl required sx={{ maxWidth: "40rem" }} error={answer === "" && tipsOn}>
+          <FormLabel id="demo-controlled-radio-buttons-group">{question}</FormLabel>
           <RadioGroup
             aria-labelledby="demo-controlled-radio-buttons-group"
             name="controlled-radio-buttons-group"
@@ -184,32 +182,14 @@ const FormComponent: FC<Props2> = ({
             }}
           >
             {values.map((value, i) => (
-              <FormControlLabel
-                key={i}
-                value={value}
-                control={<Radio />}
-                label={value}
-              />
+              <FormControlLabel key={i} value={value} control={<Radio />} label={value} />
             ))}
           </RadioGroup>
         </FormControl>
       );
     case "longtext":
       return (
-        <TextField
-          required
-          id="filled-basic"
-          label={question}
-          fullWidth
-          variant="filled"
-          multiline
-          minRows={3}
-          value={answer}
-          onChange={(e) => updateQuestion(e.target.value, index)}
-          sx={{
-            maxWidth: "50%",
-          }}
-        />
+        <TextField required error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} id="filled-basic" label={question} fullWidth sx={{ maxWidth: "50rem" }} variant="filled" multiline minRows={3} value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />
       );
     default:
       return <h2>This question could not render {index}</h2>;
