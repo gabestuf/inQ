@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SurveyPage from "./pages/SurveyPage";
 import { AppContext } from "./AppContext.js";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PageNotFound from "./pages/PageNotFound";
 import Grid from "@mui/material/Grid";
 import Footer from "./components/Footer";
@@ -27,10 +27,10 @@ function App() {
           >
             <Header />
             <Routes>
-              <Route index element={<SurveyPage />} />
               <Route path="/survey" element={<CreateSurveyPage />} />
               <Route path="/survey/:id" element={<SurveyPage />} />
               <Route path="/404" element={<PageNotFound />} />
+              <Route path="*" element={<Navigate replace to="/survey" />} />
             </Routes>
             <Footer />
           </Grid>
