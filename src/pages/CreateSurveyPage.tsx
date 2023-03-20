@@ -1,22 +1,9 @@
-import {
-  Button,
-  Grid,
-  List,
-  TextField,
-  Typography,
-  ListItemButton,
-  ListItem,
-  ListItemText,
-  Switch,
-  FormGroup,
-  FormControlLabel,
-  Divider,
-  Box,
-} from "@mui/material";
+import { Button, Grid, List, TextField, Typography, ListItemButton, ListItem, ListItemText, Switch, FormGroup, FormControlLabel, Divider, Box } from "@mui/material";
 import { FC, Fragment, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddQuestionForm from "../components/AddQuestionForm";
 import { Question } from "../components/QuestionsInterface";
+import URL from "../URLS";
 
 interface Props {}
 
@@ -51,9 +38,7 @@ const CreateSurveyPage: FC<Props> = () => {
     // check if question with same name exists
     for (const ques of createSurveyAnswers.questions) {
       if (q.question === ques.question) {
-        alert(
-          "Question with same name already exists! Pls rename your question"
-        );
+        alert("Question with same name already exists! Pls rename your question");
         return;
       }
     }
@@ -67,11 +52,7 @@ const CreateSurveyPage: FC<Props> = () => {
   const removeQuestion = (i: number) => {
     setCreateSurveyAnswers({
       ...createSurveyAnswers,
-      questions: [
-        ...createSurveyAnswers.questions.filter(
-          (question) => question !== createSurveyAnswers.questions[i]
-        ),
-      ],
+      questions: [...createSurveyAnswers.questions.filter((question) => question !== createSurveyAnswers.questions[i])],
     });
   };
 
@@ -79,23 +60,20 @@ const CreateSurveyPage: FC<Props> = () => {
     if (!isPrivate) {
       createSurveyAnswers.creatorPassword = "";
     }
-    const response = await fetch(
-      "https://gabestuf.com/inq/survey/createSurvey",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          creator: createSurveyAnswers.creatorName,
-          password: createSurveyAnswers.creatorPassword,
-          title: createSurveyAnswers.title,
-          description: createSurveyAnswers.description,
-          questions: createSurveyAnswers.questions,
-          isPrivate: isPrivate,
-        }),
-      }
-    );
+    const response = await fetch(URL + "/survey/createSurvey", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        creator: createSurveyAnswers.creatorName,
+        password: createSurveyAnswers.creatorPassword,
+        title: createSurveyAnswers.title,
+        description: createSurveyAnswers.description,
+        questions: createSurveyAnswers.questions,
+        isPrivate: isPrivate,
+      }),
+    });
     console.log(response);
     const resJSON = await response.json();
 
@@ -111,27 +89,14 @@ const CreateSurveyPage: FC<Props> = () => {
 
   return (
     <Fragment>
-      <Grid
-        flexGrow={1}
-        padding="3rem 4rem"
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        gap="1.5rem"
-      >
-        <Typography
-          variant="h4"
-          textAlign={"center"}
-          sx={{ maxWidth: "50rem" }}
-        >
+      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1.5rem">
+        <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
           Look at that, a survey for creating surveys.
         </Typography>
         <TextField
           sx={{ maxWidth: "40rem" }}
           required
           size="small"
-          id="filled-basic"
           label="Creator Name"
           variant="filled"
           value={createSurveyAnswers.creatorName}
@@ -143,16 +108,7 @@ const CreateSurveyPage: FC<Props> = () => {
           }}
         />
         <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                value={isPrivate}
-                defaultChecked={true}
-                onChange={(e) => setIsPrivate(e.target.value === "false")}
-              />
-            }
-            label="Private"
-          />
+          <FormControlLabel control={<Switch value={isPrivate} defaultChecked={true} onChange={(e) => setIsPrivate(e.target.value === "false")} />} label="Private" />
         </FormGroup>
         {isPrivate && (
           <TextField
@@ -160,7 +116,6 @@ const CreateSurveyPage: FC<Props> = () => {
             required
             type="password"
             size="small"
-            id="filled-basic"
             label="Survey Password"
             variant="filled"
             value={createSurveyAnswers.creatorPassword}
@@ -178,7 +133,6 @@ const CreateSurveyPage: FC<Props> = () => {
           required
           type="text"
           size="small"
-          id="filled-basic"
           label="Survey Title"
           variant="filled"
           value={createSurveyAnswers.title}
@@ -191,7 +145,6 @@ const CreateSurveyPage: FC<Props> = () => {
         />
 
         <TextField
-          id="filled-basic"
           label="description"
           fullWidth
           sx={{ maxWidth: "30rem" }}
@@ -233,10 +186,7 @@ const CreateSurveyPage: FC<Props> = () => {
         </Box>
 
         {isAddingQuestion ? (
-          <AddQuestionForm
-            addQuestion={addQuestion}
-            setIsAddingQuestion={setIsAddingQuestion}
-          />
+          <AddQuestionForm addQuestion={addQuestion} setIsAddingQuestion={setIsAddingQuestion} />
         ) : (
           <Button
             color="primary"
@@ -274,9 +224,7 @@ const CreateSurveyPage: FC<Props> = () => {
             >
               Create Survey
             </Button>
-            <Typography variant="caption">
-              pls add at least one question
-            </Typography>
+            <Typography variant="caption">pls add at least one question</Typography>
             <Typography variant="caption">* required field</Typography>
           </>
         )}

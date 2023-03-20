@@ -1,20 +1,9 @@
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { FC, Fragment, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Question } from "../components/QuestionsInterface";
+import URL from "../URLS";
 
 interface Props {}
 
@@ -22,9 +11,7 @@ const SurveyPage: FC<Props> = () => {
   let { id } = useParams();
   // This is the thing that would come from the database:
   const [isPrivate, setIsPrivate] = useState<boolean>(true);
-  const [questionAnswers, setQuestionAnswers] = useState<
-    { question: string; answer: string }[]
-  >([]);
+  const [questionAnswers, setQuestionAnswers] = useState<{ question: string; answer: string }[]>([]);
   const [surveyData, setSurveyData] = useState<{
     id: string;
     owner: string;
@@ -65,9 +52,8 @@ const SurveyPage: FC<Props> = () => {
   }, [surveyData]);
 
   async function getSurvey(id: string) {
-    const response = await fetch(
-      `https://gabestuf.com/inq/survey/getSurvey/${id}`
-    );
+    console.log("ASD");
+    const response = await fetch(`${URL}/survey/${id}`);
     console.log(response);
     const resJSON = await response.json();
 
@@ -121,7 +107,6 @@ const SurveyPage: FC<Props> = () => {
     }
 
     if (changed) {
-      console.log(tipsOn);
       setTipsOn([...tipsOn]);
       return;
     }
@@ -136,21 +121,18 @@ const SurveyPage: FC<Props> = () => {
       pass = pass2;
     }
 
-    const response = await fetch(
-      "http://localhost:3000/inq/survey/saveResponse",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          isPrivate: isPrivate,
-          questionID: surveyData.id,
-          password: pass,
-          answers: questionAnswers,
-        }),
-      }
-    );
+    const response = await fetch(URL + "/survey/saveResponse", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isPrivate: isPrivate,
+        questionID: surveyData.id,
+        password: pass,
+        answers: questionAnswers,
+      }),
+    });
 
     const resJSON = await response.json();
 
@@ -166,42 +148,14 @@ const SurveyPage: FC<Props> = () => {
 
   return (
     <Fragment>
-      <Grid
-        flexGrow={1}
-        padding="3rem 4rem"
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        gap="1rem"
-      >
-        <Typography
-          variant="h4"
-          textAlign={"center"}
-          sx={{ maxWidth: "50rem" }}
-        >
+      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1rem">
+        <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
           {surveyData.title}
         </Typography>
 
         {surveyData.questions.map((q, i) => {
-          if (
-            surveyData &&
-            surveyData.questions &&
-            surveyData.questions.length > 0 &&
-            questionAnswers.length === surveyData.questions.length
-          ) {
-            return (
-              <FormComponent
-                tipsOn={tipsOn[i] > 0}
-                key={i}
-                question={q.question}
-                index={i}
-                type={q.type}
-                values={q.answers}
-                answer={questionAnswers[i].answer}
-                updateQuestion={updateQuestion}
-              />
-            );
+          if (surveyData && surveyData.questions && surveyData.questions.length > 0 && questionAnswers.length === surveyData.questions.length) {
+            return <FormComponent tipsOn={tipsOn[i] > 0} key={i} question={q.question} index={i} type={q.type} values={q.answers} answer={questionAnswers[i].answer} updateQuestion={updateQuestion} />;
           }
           return null;
         })}
@@ -231,42 +185,15 @@ interface Props2 {
   tipsOn: boolean;
 }
 
-const FormComponent: FC<Props2> = ({
-  question,
-  type,
-  values,
-  answer,
-  updateQuestion,
-  index,
-  tipsOn,
-}) => {
+const FormComponent: FC<Props2> = ({ question, type, values, answer, updateQuestion, index, tipsOn }) => {
   switch (type) {
     case "text":
-      return (
-        <TextField
-          error={answer === "" && tipsOn}
-          helperText={answer === "" ? "fill out all fields" : ""}
-          sx={{ maxWidth: "40rem" }}
-          required
-          size="small"
-          id="filled-basic"
-          label={question}
-          variant="filled"
-          value={answer}
-          onChange={(e) => updateQuestion(e.target.value, index)}
-        />
-      );
+      return <TextField error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} sx={{ maxWidth: "40rem" }} required size="small" id="filled-basic" label={question} variant="filled" value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />;
 
     case "radio":
       return (
-        <FormControl
-          required
-          sx={{ maxWidth: "40rem" }}
-          error={answer === "" && tipsOn}
-        >
-          <FormLabel id="demo-controlled-radio-buttons-group">
-            {question}
-          </FormLabel>
+        <FormControl required sx={{ maxWidth: "40rem" }} error={answer === "" && tipsOn}>
+          <FormLabel id="demo-controlled-radio-buttons-group">{question}</FormLabel>
           <RadioGroup
             aria-labelledby="demo-controlled-radio-buttons-group"
             name="controlled-radio-buttons-group"
@@ -276,40 +203,18 @@ const FormComponent: FC<Props2> = ({
             }}
           >
             {values.map((value, i) => (
-              <FormControlLabel
-                key={i}
-                value={value}
-                control={<Radio />}
-                label={value}
-              />
+              <FormControlLabel key={i} value={value} control={<Radio />} label={value} />
             ))}
           </RadioGroup>
         </FormControl>
       );
     case "longtext":
       return (
-        <TextField
-          required
-          error={answer === "" && tipsOn}
-          helperText={answer === "" ? "fill out all fields" : ""}
-          id="filled-basic"
-          label={question}
-          fullWidth
-          sx={{ maxWidth: "50rem" }}
-          variant="filled"
-          multiline
-          minRows={3}
-          value={answer}
-          onChange={(e) => updateQuestion(e.target.value, index)}
-        />
+        <TextField required error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} id="filled-basic" label={question} fullWidth sx={{ maxWidth: "50rem" }} variant="filled" multiline minRows={3} value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />
       );
     case "select":
       return (
-        <FormControl
-          required
-          sx={{ maxWidth: "40rem", minWidth: "12rem" }}
-          error={answer === "" && tipsOn}
-        >
+        <FormControl required sx={{ maxWidth: "40rem", minWidth: "12rem" }} error={answer === "" && tipsOn}>
           <FormLabel id="demo-simple-select-label">{question}</FormLabel>
           <Select
             labelId="demo-simple-select-label"
