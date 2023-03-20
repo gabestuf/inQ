@@ -137,7 +137,7 @@ const SurveyPage: FC<Props> = () => {
     }
 
     const response = await fetch(
-      "https://gabestuf.com/inq/survey/saveResponse",
+      "http://localhost:3000/inq/survey/saveResponse",
       {
         method: "POST",
         headers: {
