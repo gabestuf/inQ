@@ -66,7 +66,7 @@ const SurveyPage: FC<Props> = () => {
 
   async function getSurvey(id: string) {
     const response = await fetch(
-      `http://127.0.0.1:4444/api/survey/getSurvey/${id}`
+      `https://gabestuf.com/inq/survey/getSurvey/${id}`
     );
     console.log(response);
     const resJSON = await response.json();
@@ -137,7 +137,7 @@ const SurveyPage: FC<Props> = () => {
     }
 
     const response = await fetch(
-      "http://127.0.0.1:4444/api/survey/saveResponse",
+      "https://gabestuf.com/inq/survey/saveResponse",
       {
         method: "POST",
         headers: {

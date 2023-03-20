@@ -7,15 +7,4 @@ const url = build ? "https://gabestuf.com" : "http://localhost:3000";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 4444,
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000/inq",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
 });
