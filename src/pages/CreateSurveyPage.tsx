@@ -80,7 +80,7 @@ const CreateSurveyPage: FC<Props> = () => {
       createSurveyAnswers.creatorPassword = "";
     }
     const response = await fetch(
-      "http://127.0.0.1:4444/api/survey/createSurvey",
+      "https://www.gabestuf.com/inq/survey/createSurvey",
       {
         method: "POST",
         headers: {
