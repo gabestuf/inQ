@@ -79,20 +79,23 @@ const CreateSurveyPage: FC<Props> = () => {
     if (!isPrivate) {
       createSurveyAnswers.creatorPassword = "";
     }
-    const response = await fetch("/inq/survey/createSurvey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        creator: createSurveyAnswers.creatorName,
-        password: createSurveyAnswers.creatorPassword,
-        title: createSurveyAnswers.title,
-        description: createSurveyAnswers.description,
-        questions: createSurveyAnswers.questions,
-        isPrivate: isPrivate,
-      }),
-    });
+    const response = await fetch(
+      "http://127.0.0.1:4444/api/survey/createSurvey",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          creator: createSurveyAnswers.creatorName,
+          password: createSurveyAnswers.creatorPassword,
+          title: createSurveyAnswers.title,
+          description: createSurveyAnswers.description,
+          questions: createSurveyAnswers.questions,
+          isPrivate: isPrivate,
+        }),
+      }
+    );
     console.log(response);
     const resJSON = await response.json();
 

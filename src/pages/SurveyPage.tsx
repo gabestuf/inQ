@@ -65,7 +65,9 @@ const SurveyPage: FC<Props> = () => {
   }, [surveyData]);
 
   async function getSurvey(id: string) {
-    const response = await fetch(`/inq/survey/getSurvey/${id}`);
+    const response = await fetch(
+      `http://127.0.0.1:4444/api/survey/getSurvey/${id}`
+    );
     console.log(response);
     const resJSON = await response.json();
 
@@ -134,18 +136,21 @@ const SurveyPage: FC<Props> = () => {
       pass = pass2;
     }
 
-    const response = await fetch("/inq/survey/saveResponse", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        isPrivate: isPrivate,
-        questionID: surveyData.id,
-        password: pass,
-        answers: questionAnswers,
-      }),
-    });
+    const response = await fetch(
+      "http://127.0.0.1:4444/api/survey/saveResponse",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isPrivate: isPrivate,
+          questionID: surveyData.id,
+          password: pass,
+          answers: questionAnswers,
+        }),
+      }
+    );
 
     const resJSON = await response.json();
 
