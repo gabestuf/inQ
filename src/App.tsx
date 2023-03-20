@@ -9,7 +9,7 @@ import CreateSurveyPage from "./pages/CreateSurveyPage";
 import HomePage from "./pages/HomePage";
 
 function App() {
-  const prod = false;
+  const prod = true;
   const url = prod ? "https://gabestuf.com/inq" : "http://localhost:3000/inq";
   return (
     <div className="App">
