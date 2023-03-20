@@ -1,23 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { FC, Fragment, useState } from "react";
 
 interface Question {
@@ -27,14 +8,14 @@ interface Question {
 }
 interface Props {
   addQuestion: (q: Question) => void;
+  setIsAddingQuestion: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
-  const [addQuestionFormAnswers, setAddQuestionFormAnswers] =
-    useState<Question>({
-      question: "",
-      type: "text",
-      answers: [],
-    });
+const AddQuestionForm: FC<Props> = ({ addQuestion, setIsAddingQuestion }) => {
+  const [addQuestionFormAnswers, setAddQuestionFormAnswers] = useState<Question>({
+    question: "",
+    type: "text",
+    answers: [],
+  });
 
   const [addOptionText, setAddOptionText] = useState<string>("");
 
@@ -49,22 +30,29 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
     setAddOptionText("");
   }
 
+  const handleAddQuestionSubmit = () => {
+    // check if question title is blank
+    if (addQuestionFormAnswers.question === "") {
+      alert("Please make sure your question has a name");
+      return;
+    }
+
+    // check if at least one value if requires values
+    if (addQuestionFormAnswers.type !== "text" && addQuestionFormAnswers.type !== "longtext") {
+      if (!(addQuestionFormAnswers.answers.length > 0)) {
+        alert("This question type requires at least one option");
+        return;
+      }
+    }
+    addQuestion(addQuestionFormAnswers);
+    setIsAddingQuestion(false);
+  };
+
   return (
     <Fragment>
-      <Grid
-        flexGrow={1}
-        padding="3rem 4rem"
-        container
-        spacing={0}
-        direction="column"
-        gap="1rem"
-      >
+      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" gap="1rem">
         <Divider />
-        <Typography
-          variant="h4"
-          textAlign={"center"}
-          sx={{ maxWidth: "50rem" }}
-        >
+        <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
           Add a question
         </Typography>
 
@@ -111,10 +99,7 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
         {addQuestionFormAnswers.type.includes("text") ? null : (
           <Fragment>
             <Typography variant="h5">
-              Options{" "}
-              <Typography sx={{ fontStyle: "italic" }}>
-                (Need at least one)
-              </Typography>
+              Options <Typography sx={{ fontStyle: "italic" }}>(Need at least one)</Typography>
             </Typography>
             <List sx={{ maxWidth: "20rem", borderLeft: "solid thin black" }}>
               {addQuestionFormAnswers.answers.map((q: string, i: number) => (
@@ -131,11 +116,7 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
                   onClick={() =>
                     setAddQuestionFormAnswers({
                       ...addQuestionFormAnswers,
-                      answers: [
-                        ...addQuestionFormAnswers.answers.filter(
-                          (e: string) => e !== q
-                        ),
-                      ],
+                      answers: [...addQuestionFormAnswers.answers.filter((e: string) => e !== q)],
                     })
                   }
                 >
@@ -155,11 +136,7 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
               onChange={(e) => setAddOptionText(e.target.value)}
               InputProps={{
                 endAdornment: (
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => addOption(addOptionText)}
-                  >
+                  <Button variant="outlined" size="large" onClick={() => addOption(addOptionText)}>
                     Add
                   </Button>
                 ),
@@ -174,12 +151,7 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
             maxWidth: "20rem",
           }}
         >
-          <Button
-            sx={{ maxWidth: "5rem" }}
-            variant="outlined"
-            size="large"
-            onClick={() => addQuestion(addQuestionFormAnswers)}
-          >
+          <Button sx={{ maxWidth: "5rem" }} variant="outlined" size="large" onClick={() => handleAddQuestionSubmit()}>
             Finish
           </Button>
           <Button
@@ -188,7 +160,7 @@ const AddQuestionForm: FC<Props> = ({ addQuestion }) => {
             variant="outlined"
             size="large"
             onClick={() => {
-              return <p>ADSd</p>;
+              setIsAddingQuestion(false);
             }}
           >
             Cancel

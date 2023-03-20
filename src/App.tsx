@@ -1,4 +1,3 @@
-import { useState } from "react";
 import SurveyPage from "./pages/SurveyPage";
 import { AppContext } from "./AppContext.js";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -7,10 +6,11 @@ import Grid from "@mui/material/Grid";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import CreateSurveyPage from "./pages/CreateSurveyPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
   const prod = false;
-  const url = prod ? "https://gabestuf.com" : "http://localhost:3000";
+  const url = prod ? "https://gabestuf.com/inq" : "http://localhost:3000/inq";
   return (
     <div className="App">
       <BrowserRouter>
@@ -27,10 +27,12 @@ function App() {
           >
             <Header />
             <Routes>
-              <Route path="/survey" element={<CreateSurveyPage />} />
+              <Route path="/createsurvey" element={<CreateSurveyPage />} />
+              <Route path="/survey" element={<Navigate replace to="/createsurvey" />} />
               <Route path="/survey/:id" element={<SurveyPage />} />
               <Route path="/404" element={<PageNotFound />} />
-              <Route path="*" element={<Navigate replace to="/survey" />} />
+              <Route path="*" element={<Navigate replace to="/404" />} />
+              <Route index element={<HomePage />} />
             </Routes>
             <Footer />
           </Grid>
