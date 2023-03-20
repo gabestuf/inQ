@@ -52,9 +52,7 @@ const SurveyPage: FC<Props> = () => {
   }, [surveyData]);
 
   async function getSurvey(id: string) {
-    console.log("ASD");
     const response = await fetch(`${URL}/survey/${id}`);
-    console.log(response);
     const resJSON = await response.json();
 
     if (resJSON.status === "SUCCESS") {

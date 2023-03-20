@@ -74,10 +74,7 @@ const CreateSurveyPage: FC<Props> = () => {
         isPrivate: isPrivate,
       }),
     });
-    console.log(response);
     const resJSON = await response.json();
-
-    console.log(resJSON);
 
     if (resJSON.status === "SUCCESS") {
       navigate(`/survey/${resJSON.data.id}`);
