@@ -7,19 +7,22 @@ import URL from "../URLS";
 
 interface Props {}
 
+interface SurveyData {
+  id: string;
+  owner: string;
+  title: string;
+  description: string;
+  questions: Question[];
+  responseList: string[];
+}
+
 const SurveyPage: FC<Props> = () => {
   let { id } = useParams();
   // This is the thing that would come from the database:
+  const [pageLoading, setPageLoading] = useState<boolean>(false);
   const [isPrivate, setIsPrivate] = useState<boolean>(true);
   const [questionAnswers, setQuestionAnswers] = useState<{ question: string; answer: string }[]>([]);
-  const [surveyData, setSurveyData] = useState<{
-    id: string;
-    owner: string;
-    title: string;
-    description: string;
-    questions: Question[];
-    responseList: string[];
-  }>({
+  const [surveyData, setSurveyData] = useState<SurveyData>({
     id: "0",
     owner: "default",
     title: "Oops, there was an error",
@@ -52,12 +55,16 @@ const SurveyPage: FC<Props> = () => {
   }, [surveyData]);
 
   async function getSurvey(id: string) {
+    // set the page to loading
+    setPageLoading(true);
+
+    // fetch survey
     const response = await fetch(`${URL}/survey/${id}`);
     const resJSON = await response.json();
 
     if (resJSON.status === "SUCCESS") {
       setIsPrivate(resJSON.isPrivate === "true");
-      const newData = {
+      const newData: SurveyData = {
         id: resJSON.id,
         owner: resJSON.owner,
         title: resJSON.title,
@@ -72,6 +79,7 @@ const SurveyPage: FC<Props> = () => {
       //alert(`Error: ${resJSON.message}`);
       navigate("/404");
     }
+    setPageLoading(false);
   }
 
   function initQuestionList() {
@@ -143,6 +151,19 @@ const SurveyPage: FC<Props> = () => {
       alert(`Failed to save response | ${resJSON.message}`);
     }
   };
+
+  // return this if page is still loading
+  if (pageLoading) {
+    return (
+      <Fragment>
+        <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1rem">
+          <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
+            Loading...
+          </Typography>
+        </Grid>
+      </Fragment>
+    );
+  }
 
   return (
     <Fragment>
