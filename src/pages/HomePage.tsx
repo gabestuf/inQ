@@ -12,8 +12,8 @@ const HomePage: FC<Props> = () => {
       <Typography variant="h3">Any Questions?</Typography>
       <Divider />
       <Typography variant="subtitle1">Good, cause now you can answer them. </Typography>
-      <Grid container spacing={2} marginTop="5rem">
-        <Grid item xs={6} md={6}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={5} lg={6} xl={6} marginTop="0px">
           <Box sx={{ padding: "5rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <Typography variant="h5">Start today!</Typography>
             <Button
@@ -27,7 +27,7 @@ const HomePage: FC<Props> = () => {
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={6} md={6}>
+        <Grid item xs={12} sm={12} md={7} lg={6} xl={6}>
           <Box sx={{ padding: "5rem" }}>
             <Typography variant="h5">How it works.</Typography>
             <Typography variant="body1">

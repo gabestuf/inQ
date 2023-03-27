@@ -8,17 +8,29 @@ const Footer: FC = () => {
       sx={{
         width: "100%",
         height: "auto",
-        outline: "solid thin #302e35",
+        borderBottom: "solid thin #302e35",
         paddingTop: "1rem",
         paddingBottom: "1rem",
       }}
     >
-      <Container maxWidth="lg">
-        <Grid container direction="column">
-          <Grid item xs={12}>
-            <Typography color="#302e35" variant="h2" sx={{ fontWeight: "bold" }}>
+      <Container>
+        <Grid container direction="row" sx={{ justifyContent: "space-between" }}>
+          <Grid item xs={1} sm={3}>
+            <Typography variant="h2" sx={{ fontWeight: "bold" }}>
               <Link href="/" sx={{ textDecoration: "none" }}>
                 inQ
+              </Link>
+            </Typography>
+          </Grid>
+          <Grid item xs={6} sm={9} display="flex" flexDirection="row" justifyContent="flex-end" gap="5rem" alignItems="flex-end">
+            <Typography variant="overline" sx={{ fontWeight: "bold" }}>
+              <Link href="/findsurvey" sx={{ textDecoration: "none" }}>
+                Find Surveys
+              </Link>
+            </Typography>
+            <Typography variant="overline" sx={{ fontWeight: "bold" }}>
+              <Link href="https://gabecamacho.com" sx={{ textDecoration: "none" }}>
+                GabeCamacho.com
               </Link>
             </Typography>
           </Grid>
