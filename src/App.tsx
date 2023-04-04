@@ -1,4 +1,4 @@
-import SurveyPage from "./pages/SurveyPage";
+import SurveyPage from "./pages/SurveyPage/SurveyPage";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PageNotFound from "./pages/PageNotFound";
 import Grid from "@mui/material/Grid";

@@ -2,8 +2,10 @@ import { Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem,
 import Grid from "@mui/material/Grid";
 import { FC, Fragment, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Question } from "../components/QuestionsInterface";
-import URL from "../URLS";
+import { Question } from "../../components/QuestionsInterface";
+import URL from "../../URLS";
+import SurveyForm from "./SurveyForm";
+import { DetailsSelector } from "./DetailsSelector";
 
 interface Props {}
 
@@ -167,14 +169,15 @@ const SurveyPage: FC<Props> = () => {
 
   return (
     <Fragment>
-      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1rem">
+      <DetailsSelector />
+      <Grid flexGrow={1} padding="0rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1rem">
         <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
           {surveyData.title}
         </Typography>
 
         {surveyData.questions.map((q, i) => {
           if (surveyData && surveyData.questions && surveyData.questions.length > 0 && questionAnswers.length === surveyData.questions.length) {
-            return <FormComponent tipsOn={tipsOn[i] > 0} key={i} question={q.question} index={i} type={q.type} values={q.answers} answer={questionAnswers[i].answer} updateQuestion={updateQuestion} />;
+            return <SurveyForm tipsOn={tipsOn[i] > 0} key={i} question={q.question} index={i} type={q.type} values={q.answers} answer={questionAnswers[i].answer} updateQuestion={updateQuestion} />;
           }
           return null;
         })}
@@ -192,73 +195,6 @@ const SurveyPage: FC<Props> = () => {
       </Grid>
     </Fragment>
   );
-};
-
-interface Props2 {
-  type: string;
-  values: string[];
-  answer: string;
-  index: number;
-  question: string;
-  updateQuestion: (answer: string, index: number) => void;
-  tipsOn: boolean;
-}
-
-const FormComponent: FC<Props2> = ({ question, type, values, answer, updateQuestion, index, tipsOn }) => {
-  switch (type) {
-    case "text":
-      return <TextField error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} sx={{ maxWidth: "40rem" }} required size="small" id="filled-basic" label={question} variant="filled" value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />;
-
-    case "radio":
-      return (
-        <FormControl required sx={{ maxWidth: "40rem" }} error={answer === "" && tipsOn}>
-          <FormLabel id="demo-controlled-radio-buttons-group">{question}</FormLabel>
-          <RadioGroup
-            aria-labelledby="demo-controlled-radio-buttons-group"
-            name="controlled-radio-buttons-group"
-            value={answer}
-            onChange={(e) => {
-              updateQuestion(e.target.value, index);
-            }}
-          >
-            {values.map((value, i) => (
-              <FormControlLabel key={i} value={value} control={<Radio />} label={value} />
-            ))}
-          </RadioGroup>
-        </FormControl>
-      );
-    case "longtext":
-      return (
-        <TextField required error={answer === "" && tipsOn} helperText={answer === "" ? "fill out all fields" : ""} id="filled-basic" label={question} fullWidth sx={{ maxWidth: "50rem" }} variant="filled" multiline minRows={3} value={answer} onChange={(e) => updateQuestion(e.target.value, index)} />
-      );
-    case "select":
-      return (
-        <FormControl required sx={{ maxWidth: "40rem", minWidth: "12rem" }} error={answer === "" && tipsOn}>
-          <FormLabel id="demo-simple-select-label">{question}</FormLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={answer}
-            label={question}
-            onChange={(e) => {
-              updateQuestion(e.target.value, index);
-            }}
-          >
-            {values.map((value, i) => (
-              <MenuItem key={i} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      );
-    default:
-      return (
-        <h2>
-          This question could not render: {index}. {question}
-        </h2>
-      );
-  }
 };
 
 export default SurveyPage;

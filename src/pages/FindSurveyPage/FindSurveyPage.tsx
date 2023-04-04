@@ -10,6 +10,12 @@ import { SurveyInfo, FilterInfo } from "./FilterInterfaces";
 interface Props {}
 
 const FindSurveyPage: FC<Props> = () => {
+  /* 
+  TODO, right now the thing pulls a max of 100 surveys from database. 
+  If scrolled to last page, have a button saying load more results 
+  (if there are more). 
+  This will pull the next 100 surveys and add them to the surveyList
+  */
   const [filters, setFilters] = useState<FilterInfo>({
     hidePrivate: false,
     page: 0,

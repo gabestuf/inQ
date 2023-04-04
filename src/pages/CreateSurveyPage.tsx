@@ -85,121 +85,133 @@ const CreateSurveyPage: FC<Props> = () => {
   };
 
   return (
-    <Fragment>
-      <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1.5rem">
-        <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
-          Look at that, a survey for creating surveys.
-        </Typography>
+    <Grid flexGrow={1} padding="3rem 4rem" container spacing={0} direction="column" alignItems="center" gap="1.5rem">
+      <Typography variant="h4" textAlign={"center"} sx={{ maxWidth: "50rem" }}>
+        Look at that, a survey for creating surveys.
+      </Typography>
+      <TextField
+        sx={{ maxWidth: "40rem" }}
+        required
+        size="small"
+        label="Creator Name"
+        variant="filled"
+        value={createSurveyAnswers.creatorName}
+        onChange={(e) => {
+          setCreateSurveyAnswers({
+            ...createSurveyAnswers,
+            creatorName: e.target.value,
+          });
+        }}
+      />
+      <FormGroup>
+        <FormControlLabel control={<Switch value={isPrivate} defaultChecked={true} onChange={(e) => setIsPrivate(e.target.value === "false")} />} label="Private" />
+      </FormGroup>
+      {isPrivate && (
         <TextField
           sx={{ maxWidth: "40rem" }}
           required
+          type="password"
           size="small"
-          label="Creator Name"
+          label="Survey Password"
           variant="filled"
-          value={createSurveyAnswers.creatorName}
+          value={createSurveyAnswers.creatorPassword}
           onChange={(e) => {
             setCreateSurveyAnswers({
               ...createSurveyAnswers,
-              creatorName: e.target.value,
+              creatorPassword: e.target.value,
             });
           }}
         />
-        <FormGroup>
-          <FormControlLabel control={<Switch value={isPrivate} defaultChecked={true} onChange={(e) => setIsPrivate(e.target.value === "false")} />} label="Private" />
-        </FormGroup>
-        {isPrivate && (
-          <TextField
-            sx={{ maxWidth: "40rem" }}
-            required
-            type="password"
-            size="small"
-            label="Survey Password"
-            variant="filled"
-            value={createSurveyAnswers.creatorPassword}
-            onChange={(e) => {
-              setCreateSurveyAnswers({
-                ...createSurveyAnswers,
-                creatorPassword: e.target.value,
-              });
-            }}
-          />
-        )}
+      )}
 
-        <TextField
-          sx={{ maxWidth: "40rem" }}
-          required
-          type="text"
-          size="small"
-          label="Survey Title"
-          variant="filled"
-          value={createSurveyAnswers.title}
-          onChange={(e) => {
-            setCreateSurveyAnswers({
-              ...createSurveyAnswers,
-              title: e.target.value,
-            });
+      <TextField
+        sx={{ maxWidth: "40rem" }}
+        required
+        type="text"
+        size="small"
+        label="Survey Title"
+        variant="filled"
+        value={createSurveyAnswers.title}
+        onChange={(e) => {
+          setCreateSurveyAnswers({
+            ...createSurveyAnswers,
+            title: e.target.value,
+          });
+        }}
+      />
+
+      <TextField
+        label="description"
+        fullWidth
+        sx={{ maxWidth: "30rem" }}
+        variant="filled"
+        multiline
+        minRows={3}
+        value={createSurveyAnswers.description}
+        onChange={(e) =>
+          setCreateSurveyAnswers({
+            ...createSurveyAnswers,
+            description: e.target.value,
+          })
+        }
+      />
+
+      <Divider />
+      <Box>
+        <Typography variant="h5">Question List:</Typography>
+        <List sx={{ maxWidth: "20rem", borderLeft: "solid thin black" }}>
+          {createSurveyAnswers.questions.map((q, i) => (
+            <ListItemButton
+              key={i}
+              sx={{
+                transition: "all 200ms",
+                margin: "none",
+                borderRadius: ".2rem",
+                ":hover": {
+                  bgcolor: "error.light",
+                },
+              }}
+              onClick={() => removeQuestion(i)}
+            >
+              <ListItem disablePadding>
+                <ListItemText key={i} primary={`${i + 1}. ${q.question}`} />
+              </ListItem>
+            </ListItemButton>
+          ))}
+        </List>
+      </Box>
+
+      {isAddingQuestion ? (
+        <AddQuestionForm addQuestion={addQuestion} setIsAddingQuestion={setIsAddingQuestion} />
+      ) : (
+        <Button
+          color="primary"
+          variant="outlined"
+          size="large"
+          onClick={() => {
+            setIsAddingQuestion(true);
           }}
-        />
+        >
+          Add Question
+        </Button>
+      )}
 
-        <TextField
-          label="description"
-          fullWidth
-          sx={{ maxWidth: "30rem" }}
-          variant="filled"
-          multiline
-          minRows={3}
-          value={createSurveyAnswers.description}
-          onChange={(e) =>
-            setCreateSurveyAnswers({
-              ...createSurveyAnswers,
-              description: e.target.value,
-            })
-          }
-        />
-
-        <Divider />
-        <Box>
-          <Typography variant="h5">Question List:</Typography>
-          <List sx={{ maxWidth: "20rem", borderLeft: "solid thin black" }}>
-            {createSurveyAnswers.questions.map((q, i) => (
-              <ListItemButton
-                key={i}
-                sx={{
-                  transition: "all 200ms",
-                  margin: "none",
-                  borderRadius: ".2rem",
-                  ":hover": {
-                    bgcolor: "error.light",
-                  },
-                }}
-                onClick={() => removeQuestion(i)}
-              >
-                <ListItem disablePadding>
-                  <ListItemText key={i} primary={`${i + 1}. ${q.question}`} />
-                </ListItem>
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-
-        {isAddingQuestion ? (
-          <AddQuestionForm addQuestion={addQuestion} setIsAddingQuestion={setIsAddingQuestion} />
-        ) : (
-          <Button
-            color="primary"
-            variant="outlined"
-            size="large"
-            onClick={() => {
-              setIsAddingQuestion(true);
-            }}
-          >
-            Add Question
-          </Button>
-        )}
-
-        {createSurveyAnswers.questions.length > 0 ? (
+      {createSurveyAnswers.questions.length > 0 ? (
+        <Button
+          color="success"
+          variant="outlined"
+          size="large"
+          onClick={() => {
+            handleCreateSurvey();
+          }}
+        >
+          Create Survey
+        </Button>
+      ) : (
+        <>
           <Button
             color="success"
+            disabled
             variant="outlined"
             size="large"
             onClick={() => {
@@ -208,25 +220,11 @@ const CreateSurveyPage: FC<Props> = () => {
           >
             Create Survey
           </Button>
-        ) : (
-          <>
-            <Button
-              color="success"
-              disabled
-              variant="outlined"
-              size="large"
-              onClick={() => {
-                handleCreateSurvey();
-              }}
-            >
-              Create Survey
-            </Button>
-            <Typography variant="caption">pls add at least one question</Typography>
-            <Typography variant="caption">* required field</Typography>
-          </>
-        )}
-      </Grid>
-    </Fragment>
+          <Typography variant="caption">pls add at least one question</Typography>
+          <Typography variant="caption">* required field</Typography>
+        </>
+      )}
+    </Grid>
   );
 };
 
