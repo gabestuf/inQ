@@ -14,15 +14,15 @@ const Footer: FC = () => {
       }}
     >
       <Container>
-        <Grid container direction="row" sx={{ justifyContent: "space-between" }}>
-          <Grid item xs={1} sm={3}>
+        <Grid container direction="row" columns={{ xs: 7, sm: 12 }} sx={{ justifyContent: "space-between" }}>
+          <Grid item xs={12} sm={3}>
             <Typography variant="h2" sx={{ fontWeight: "bold" }}>
               <Link href="/" sx={{ textDecoration: "none" }}>
                 inQ
               </Link>
             </Typography>
           </Grid>
-          <Grid item xs={6} sm={9} display="flex" flexDirection="row" justifyContent="flex-end" gap="5rem" alignItems="flex-end">
+          <Grid item xs={12} sm={9} display="flex" flexDirection="row" justifyContent="flex-end" gap="20%" alignItems="flex-end">
             <Typography variant="overline" sx={{ fontWeight: "bold" }}>
               <Link href="/findsurvey" sx={{ textDecoration: "none" }}>
                 Find Surveys
