@@ -1,7 +1,7 @@
 import { Box, Button, Divider, FormControl, FormControlLabel, FormLabel, Grid, List, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Select, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import URL from "../../URLS";
-const PAGESIZE = 3;
+const PAGESIZE = 20;
 import FindSurveyTable from "./SurveyTable";
 import FindSurveyFilter from "./SurveyFilter";
 
@@ -55,8 +55,6 @@ const FindSurveyPage: FC<Props> = () => {
 
     const resJSON = await response.json();
 
-    console.log(resJSON);
-
     if (resJSON.status === "SUCCESS") {
       setSurveyList(resJSON.body);
     }
@@ -101,7 +99,7 @@ const FindSurveyPage: FC<Props> = () => {
   }
 
   return (
-    <Box sx={{ flex: 1, gap: "1rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Box sx={{ flex: 1, gap: "1rem", display: "flex", flexDirection: "column", alignItems: "center", marginTop: "2rem" }}>
       <FindSurveyFilter clearFilters={clearFilters} filters={filters} setFilters={setFilters} getSurveys={getSurveys} />
       <FindSurveyTable PAGESIZE={PAGESIZE} surveyList={surveyList} filters={filters} />
       <Stack spacing={2}>

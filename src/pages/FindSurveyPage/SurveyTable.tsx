@@ -17,8 +17,8 @@ const FindSurveyTable: FC<SurveyTableProps> = ({ surveyList, filters, PAGESIZE }
   const navigate = useNavigate();
 
   return (
-    <TableContainer component={Paper} sx={{ display: "flex", justifyContent: "center" }}>
-      <Table sx={{ minWidth: 650, maxWidth: "1000px" }} aria-label="simple table">
+    <TableContainer component={Paper} sx={{ display: "flex", justifyContent: "center", maxWidth: "min(92vw, 1000px)" }}>
+      <Table aria-label="survey search table">
         <TableHead sx={{ backgroundColor: "#eee" }}>
           <TableRow>
             <TableCell>Title</TableCell>
@@ -39,7 +39,6 @@ const FindSurveyTable: FC<SurveyTableProps> = ({ surveyList, filters, PAGESIZE }
                 },
               }}
               onClick={() => {
-                console.log(survey._id);
                 navigate(`/survey/${survey._id}`);
               }}
             >

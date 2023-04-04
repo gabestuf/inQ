@@ -8,7 +8,7 @@ const HomePage: FC<Props> = () => {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", marginTop: "2rem" }}>
       <Typography variant="h3">Any Questions?</Typography>
       <Divider />
       <Typography variant="subtitle1">Good, cause now you can answer them. </Typography>
